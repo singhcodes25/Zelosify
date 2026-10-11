@@ -6,6 +6,7 @@ import {
   Smile,
   Scale3DIcon,
   Frown,
+  Box,
 } from "lucide-react";
 import { MdDataUsage } from "react-icons/md";
 
@@ -42,7 +43,13 @@ const getOverviewItemsByRole = (role) => {
     // For IT_VENDOR
     case "IT_VENDOR":
       return [
+        { title: "Openings", href: "/vendor/openings", icon: Box },
         { title: "Payments", href: "/vendor/payments", icon: CreditCard },
+      ];
+
+    case "HIRING_MANAGER":
+      return [
+        { title: "Openings", href: "/hiring-manager/openings", icon: Box },
       ];
 
     default:

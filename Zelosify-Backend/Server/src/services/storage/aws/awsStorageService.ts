@@ -5,6 +5,7 @@ import {
   PutObjectCommand,
   GetObjectCommand,
   ListObjectsV2Command,
+  HeadObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Readable } from "stream";
@@ -98,6 +99,25 @@ export class AwsStorageService extends StorageService {
       throw error;
     }
   }
+
+  // async getObjectMetadata(
+  //   key: string
+  // ): Promise<{
+  //   contentLength?: number;
+  //   contentType?: string;
+  // }> {
+  //   const response = await this.s3Client.send(
+  //     new HeadObjectCommand({
+  //       Bucket: this.bucket,
+  //       Key: key,
+  //     })
+  //   );
+
+  //   return {
+  //     contentLength: response.ContentLength,
+  //     contentType: response.ContentType,
+  //   };
+  // }
 
   async putObject(
     key: string,

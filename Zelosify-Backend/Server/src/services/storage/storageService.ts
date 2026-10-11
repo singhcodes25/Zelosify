@@ -5,6 +5,12 @@ export abstract class StorageService {
   abstract getObjectURL(key: string): Promise<string>;
 
   abstract getObjectStream(key: string): Promise<Readable>;
+  // abstract getObjectMetadata(
+  //   key: string
+  // ): Promise<{
+  //   contentLength?: number;
+  //   contentType?: string;
+  // }>;
 
   abstract putObject(
     key: string,

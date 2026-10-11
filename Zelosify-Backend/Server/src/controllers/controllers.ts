@@ -21,10 +21,11 @@ export { createDigitalInitiative } from "./form/initiativeRequestController.js";
 // Vendor resource requests
 export {
   fetchRequestData,
-  //   updateVendorRequest,
-  //   generatePresignedUrls,
-  //   uploadAttachment,
-  //   // deleteAttachment,
+  fetchRequestDataById,
+    updateVendorRequest,
+    generatePresignedUrls,
+    uploadAttachment,
+    deleteAttachment,
 } from "./vendor/resourceRequest/vendorRequestController.js";
 
 // ===== HIRING MANAGEMENT =====

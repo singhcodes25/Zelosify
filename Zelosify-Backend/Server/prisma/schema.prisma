@@ -10,7 +10,7 @@ datasource db {
 
 model User {
   id              String       @id @default(uuid())
-  username        String?      @unique 
+  username        String?      @unique
   email           String
   firstName       String?
   lastName        String?
@@ -18,7 +18,7 @@ model User {
   department      String?
   role            Role
   tenantId        String?
-  externalId      String?      @unique 
+  externalId      String?      @unique
   totpSecret      String?
   profileComplete Boolean      @default(false)
   provider        AuthProvider @default(KEYCLOAK)
@@ -27,23 +27,112 @@ model User {
   updatedAt       DateTime     @updatedAt
 
   // Add the new optional token fields:
-  accessToken     String?
-  refreshToken    String?
+  accessToken  String?
+  refreshToken String?
 
   // Relation to tenant
-  tenant          Tenants?     @relation(fields: [tenantId], references: [tenantId])
+  tenant Tenants? @relation(fields: [tenantId], references: [tenantId])
 
   @@unique([email, provider])
   @@index([tenantId])
 }
 
 model Tenants {
-  tenantId            String    @id @default(uuid())
-  companyName         String    @default("DemoTenant")
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  tenantId    String    @id @default(uuid())
+  companyName String    @default("DemoTenant")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  openings    Opening[]
+  users       User[]
+}
 
-  users               User[]
+enum OpeningStatus {
+  OPEN
+  CLOSED
+  ON_HOLD
+}
+
+enum ProfileStatus {
+  SUBMITTED
+  SHORTLISTED
+  REJECTED
+}
+
+model Opening {
+  id                     String           @id @default(uuid())
+  tenantId               String
+  title                  String
+  description            String?
+  location               String?
+  contractType           String?
+  hiringManagerId        String
+  experienceMin          Int
+  experienceMax          Int?
+  postedDate             DateTime         @default(now())
+  expectedCompletionDate DateTime?
+  actionDate             DateTime?
+  status                 OpeningStatus    @default(OPEN)
+  recommendations        Recommendation[]
+
+  tenant         Tenants         @relation(fields: [tenantId], references: [tenantId])
+  hiringProfiles hiringProfile[]
+
+  @@index([tenantId])
+}
+
+model hiringProfile {
+  id          Int           @id @default(autoincrement())
+  openingId   String
+  s3Key       String        @unique
+  uploadedBy  String
+  submittedAt DateTime      @default(now())
+  status      ProfileStatus @default(SUBMITTED)
+
+  shortlistedBy String?
+  shortlistedAt DateTime?
+  rejectedBy    String?
+  rejectedAt    DateTime?
+  deletedAt     DateTime?
+
+  // AI Agent Fields 
+  recommendations          Recommendation[]
+  recommended              Boolean?
+  recommendationScore      Float?
+  recommendationReason     String?
+  recommendationLatencyMs  Int?
+  recommendationVersion    String?
+  recommendationConfidence Float?
+  recommendedAt            DateTime?
+
+  isDeleted Boolean @default(false)
+
+  opening Opening @relation(fields: [openingId], references: [id])
+
+  @@index([openingId])
+  @@index([recommended])
+}
+
+model Recommendation {
+  id                   String   @id @default(uuid())
+  profileId            Int
+  openingId            String
+  tenantId             String
+  skillMatchScore      Float
+  experienceMatchScore Float
+  locationMatchScore   Float
+  finalScore           Float
+  decision             String
+  explanation          String?
+  metadata             Json?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  profile hiringProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  opening Opening       @relation(fields: [openingId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, openingId])
+  @@index([tenantId])
+  @@index([openingId, decision])
 }
 
 enum AuthProvider {
