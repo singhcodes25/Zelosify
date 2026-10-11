@@ -27,7 +27,6 @@ export async function deleteAttachmentImpl(
         id: profileId,
         opening: {
           tenantId,
-          deletedAt: null,
         },
       },
       select: {
@@ -47,12 +46,12 @@ export async function deleteAttachmentImpl(
 
     // Keep this ownership check if only the assigned hiring manager
     // is allowed to delete profiles. Adapt it to your RBAC policy.
-    if (profile.opening.hiringManagerId !== userId) {
-      res.status(403).json({
-        message: "You are not authorized to delete this profile",
-      });
-      return;
-    }
+    // if (profile.opening.hiringManagerId !== userId) {
+    //   res.status(403).json({
+    //     message: "You are not authorized to delete this profile",
+    //   });
+    //   return;
+    // }
 
     // await prisma.hiringProfile.update({
     //   where: { id: profile.id },
